@@ -2,22 +2,28 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Clone Repository') {
             steps {
+                // Clone the repository
                 git 'https://github.com/issath98/Django-Check-Jenkins.git'
-                sh 'docker build -t simple-django-app .'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                // Add test steps here if needed
+                // Build the Docker image
+                script {
+                    docker.build('django-app:latest', '.')
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Docker Container') {
             steps {
-                sh 'docker run -d -p 8000:8000 simple-django-app'
+                // Deploy the Docker container
+                script {
+                    docker.image('django-app:latest').run('-p 8000:8000')
+                }
             }
         }
     }
